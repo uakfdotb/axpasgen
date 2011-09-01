@@ -14,6 +14,7 @@ import hashlib
 import random
 import string
 import getpass
+import os
 
 # first, read our seed values; if not present, then generate
 
@@ -37,10 +38,16 @@ possibleCharacters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345
 generateValues = False
 
 try:
-	fin = open('axpasgen.cfg', 'r')
+	fin = open(inputFile, 'r')
 	
 	seedIterations = int(fin.readline()[:-1])
 	seedRandom = fin.readline()[:-1]
+	
+	try:
+		seedRandom = seedRandom.decode("hex")
+	except:
+		print("Error while hex-decoding seedRandom; assuming old format...")
+	
 	possibleCharacters = fin.readline()[:-1]
 	fin.close()
 except IOError:
@@ -52,16 +59,16 @@ except:
 
 if generateValues:
 	seedIterations = random.randint(1000, 3000)
-	seedRandom = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
+	seedRandom = os.urandom(1024)
 	
-	print("Writing generated seed values to file...")
+	print("Writing generated seed values to " + inputFile + "...")
 	
-	fout = open('axpasgen.cfg', 'w')
+	fout = open(inputFile, 'w')
 	fout.write(str(seedIterations) + "\n")
-	fout.write(seedRandom + "\n")
+	fout.write(seedRandom.encode("hex") + "\n")
 	fout.write(possibleCharacters + "\n")
 
-print("Using iterations=" + str(seedIterations) + " and random=" + seedRandom + "...")
+print("Using iterations=" + str(seedIterations) + " and random_length=" + str(len(seedRandom)) + "...")
 
 # initialize by hashing the password with the random seed
 mInit = hashlib.sha512()
