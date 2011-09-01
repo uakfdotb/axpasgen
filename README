@@ -1,0 +1,31 @@
+##########
+# axpasgen
+##########
+
+axpasgen is a simple python script for generating passwords for multiple websites with a passphrase (you can use one master password or a few passwords) and a site identifier. For example, your Google Account password might be generated with an identifier like "google", "googleacc", "gmail", or whatever you want. If you have multiple passwords you might designate one for forums, one for email addresses, etc. so that someone can't just guess one.
+
+The password and identifier are hashed with a random seed value. Then, the result is hashed for a seed number of iterations. Lastly, the result is converted into a preset character set (like alphanumeric or ASCII; default is keyboard characters).
+
+===============================================================================
+
+To run axpasgen:
+
+python axpasgen.py [site identifier] {password} {config file}
+
+Default for password is to prompt (key presses will not be displayed). Default for configuration file is axpasgen.cfg. The configuration file will be created will randomly generated values if it does not already exist.
+
+===============================================================================
+
+Configuration file format:
+
+<num iterations>
+<random salt>
+<output character set>
+
+<num iterations> is the number of iterations to hash for. The default is randomly generated between 1000 and 3000. Theoretically, the higher this value is, the more secure the output will be.
+
+<random salt> is, by default, a 1024-byte hexadecimal string that will be added with the password during hashing. It is decoded from its 2048-character hexadecimal format into 1024 raw bytes in the program. If <random salt> cannot be decoded, then the form in the text file will be used directly as the random value.
+
+<output character set> contains possible characters for the generated password. The raw data from the hashing algorithm are in base 256 (raw bytes); these will be converted into base len(<output character set>), and then the <output character set> array will be used to output as a string. The default includes alphanumeric and symbols (most keyboard characters).
+
+Note that both the hexadecimal version of the result and the result converted to <output character set> are printed. If <output character set> = '0123456789ABCDEF', the output will not be exactly the same because of endianness, but you will be able to see the similarity.
