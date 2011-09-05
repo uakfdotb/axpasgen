@@ -15,6 +15,7 @@ import random
 import string
 import getpass
 import os
+import math
 
 # first, read our seed values; if not present, then generate
 
@@ -35,6 +36,7 @@ fin = 0
 seedIterations = 1000
 seedRandom = ''
 possibleCharacters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$&[{}(=*)+]!#\|\';,.:<>"-_~';
+doFloor = True # whether to floor when converting bases; for compatability
 generateValues = False
 
 try:
@@ -49,6 +51,13 @@ try:
 		print("Error while hex-decoding seedRandom; assuming old format...")
 	
 	possibleCharacters = fin.readline()[:-1]
+	
+	floorLine = fin.readline()
+	if len(floorLine) == 0:
+		doFloor = False
+	else:
+		doFloor = bool(floorLine[:-1]);
+
 	fin.close()
 except IOError:
 	print("Error while opening or reading from " + inputFile + ", generating new values")
@@ -67,8 +76,9 @@ if generateValues:
 	fout.write(str(seedIterations) + "\n")
 	fout.write(seedRandom.encode("hex") + "\n")
 	fout.write(possibleCharacters + "\n")
+	fout.write(str(doFloor) + "\n")
 
-print("Using iterations=" + str(seedIterations) + " and random_length=" + str(len(seedRandom)) + "...")
+print("Using iterations=" + str(seedIterations) + ", random_length=" + str(len(seedRandom)) + ", and floor=" + str(doFloor) + "...")
 
 # initialize by hashing the password with the random seed
 mInit = hashlib.sha512()
@@ -122,6 +132,10 @@ sReadable = ""
 while convertTotal >= 1:
 	x = convertTotal % convertTo
 	sReadable += possibleCharacters[int(x)]
-	convertTotal /= convertTo
+
+	if doFloor:
+		convertTotal = math.floor(convertTotal / convertTo)
+	else:
+		convertTotal /= convertTo
 
 print("result: " + sReadable)
