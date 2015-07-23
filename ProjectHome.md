@@ -1,0 +1,3 @@
+axpasgen is a simple python script for generating passwords for multiple websites with a passphrase (you can use one master password or a few passwords) and a site identifier. For example, your Google Account password might be generated with an identifier like "google", "googleacc", "gmail", or whatever you want. If you have multiple passwords you might designate one for forums, one for email addresses, etc. so that someone can't just guess one.
+
+The password and identifier are hashed with a random seed value. Then, the result is hashed for a seed number of iterations. Lastly, the result is converted into a preset character set (like alphanumeric or ASCII; default is keyboard characters).
